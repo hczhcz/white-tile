@@ -32,3 +32,12 @@ a {
 .game {
     height: 100%;
 }
+
+.track {
+    width: 10px;
+    height: 10px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    border: 2px solid gray;
+}
