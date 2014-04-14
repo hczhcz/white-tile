@@ -197,7 +197,11 @@ $(function () {
             tracks.push(
                 $("<div class=\"track\" />")
                     .append("<div class=\"frame\" />")
-                    .click(function (){input(i);})
+                    .click(
+                        function (j){
+                            return function (){input(j);};
+                        }(i)
+                    )
                     .appendTo(game)
             );
         }
