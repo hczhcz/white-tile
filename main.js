@@ -56,10 +56,10 @@ $(function () {
     function getresult() {
         var result = {"+wt-score": getscore()};
 
-        for (i in seriestarget) {
+        for (var i in seriestarget) {
             result["-wt-series-" + seriestarget[i]] = gettime(seriestarget[i]);
         }
-        for (i in intervaltarget) {
+        for (var i in intervaltarget) {
             result["+wt-interval-" + intervaltarget[i]] = itscore[i];
         }
 
@@ -70,7 +70,7 @@ $(function () {
         var result = getresult();
         var resultsto = {};
 
-        for (i in result) {
+        for (var i in result) {
             setlocal(i, result[i]);
             resultsto[i] = getresult(i);
         }
@@ -89,7 +89,7 @@ $(function () {
     function updateit(time) {
         var lastscore = getscore();
 
-        for (i in intervaltarget) {
+        for (var i in intervaltarget) {
             if (lastscore > 0 && time - timelist[lastscore - 1] < intervaltarget[i]) {
                 ++itscore[i];
             } else {
@@ -120,8 +120,8 @@ $(function () {
     }
 
     function initgame() {
-        for (i = 0; i < gameheight; ++i) genpos();
-        for (i in intervaltarget) itscore[i] = 0;
+        for (var i = 0; i < gameheight; ++i) genpos();
+        for (var i in intervaltarget) itscore[i] = 0;
     }
 
     initgame();
@@ -144,32 +144,42 @@ $(function () {
     }
 
     function updatecanvas() {
-        var xsize = game.height();
-        var unitwidth = xsize * canvaswidth / gamewidth;
-        var unitheight = xsize / (gameheight - 1);
-        var leftpos = (game.width() - xsize * canvaswidth) / 2;
-        var toppos = game.position().top;
+        var xsize = $(".main").height() - $(".title").outerHeight() - $(".info").outerHeight();
+        var unitwidth = Math.floor(xsize * canvaswidth / gamewidth);
+        var unitheight = Math.floor(xsize / (gameheight - 1));
+        var leftpos = Math.floor((game.width() - xsize * canvaswidth) / 2);
 
-        for (i in tracks) {
-            tracks[i].stop();
-            tracks[i].animate({
+        game.css({
+            top: $(".title").outerHeight() + "px",
+            height: unitheight * (gameheight - 1) + "px"
+        })
+
+        for (var i in tracks) {
+            tracks[i].css({
                 left: leftpos + unitwidth * parseInt(i) + "px",
-                top: toppos + "px",
+                top: "0px",
                 width: unitwidth + "px",
-                height: xsize + "px"
+                height: unitheight * (gameheight - 1) + "px"
             });
         }
 
-        for (i in tiles) {
+        for (var i in tiles) {
             var unitpos = posnow - parseInt(i) + gameheight - 1;
 
             tiles[i].stop();
-            tiles[i].animate({
+            tiles[i].css({
                 left: leftpos + unitwidth * poslist[Math.floor(unitpos / gameheight) * gameheight + parseInt(i)] + "px",
-                top: toppos + unitheight * (unitpos % gameheight - 1) + "px",
                 width: unitwidth + "px",
                 height: unitheight + "px"
-            }, 100);
+            });
+
+            var anidata = {top: unitheight * (unitpos % gameheight - 1) + "px"};
+
+            if (unitpos % gameheight > 0) {
+                tiles[i].animate(anidata, 100);
+            } else {
+                tiles[i].css(anidata);
+            }
         }
     }
 
@@ -183,21 +193,25 @@ $(function () {
     }
 
     function initcanvas() {
-        for (i = 0; i < gamewidth; ++i) {
+        for (var i = 0; i < gamewidth; ++i) {
             tracks.push(
                 $("<div class=\"track\" />")
                     .append("<div class=\"frame\" />")
+                    .click(function (){input(i);})
                     .appendTo(game)
             );
         }
 
-        for (i = 0; i < gameheight; ++i) {
+        for (var i = 0; i < gameheight; ++i) {
             tiles.push(
                 $("<div class=\"tile\">")
                     .append("<div class=\"fill\">")
                     .appendTo(game)
             );
         }
+
+        $(window).resize(updatecanvas);
+        $(window).load(updatecanvas);
 
         updatecanvas();
     }
@@ -214,7 +228,7 @@ $(function () {
         90: 0, 88: 1, 67: 2, 86: 3, 66: 4, 78: 5, 77: 6, 188: 7, 190: 8, 191: 9
     }
 
-    $(document).keydown(function(event) {
+    $(document).keydown(function (event) {
         var value = keymap[event.which];
         if (value != undefined) input(value);
     });
