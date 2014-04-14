@@ -99,7 +99,7 @@ $(function () {
     }
 
     function goahead(value) {
-        var time = getTime();
+        var time = (new Date()).getTime();
 
         if (checkpos(value)) {
             // Go
@@ -143,24 +143,17 @@ $(function () {
         //
     }
 
-    function input(value) {
-        if (goahead(value)) {
-            drawsuccess();
-        } else {
-            drawfail();
-        }
-    }
-
     function updatecanvas() {
-        var xsize = game.height() + 0.0;
+        var xsize = game.height();
         var unitwidth = xsize * canvaswidth / gamewidth;
-        var unitheight = xsize / gameheight;
+        var unitheight = xsize / (gameheight - 1);
         var leftpos = (game.width() - xsize * canvaswidth) / 2;
         var toppos = game.position().top;
 
         for (i in tracks) {
+            tracks[i].stop();
             tracks[i].animate({
-                left: leftpos + unitwidth * i + "px",
+                left: leftpos + unitwidth * parseInt(i) + "px",
                 top: toppos + "px",
                 width: unitwidth + "px",
                 height: xsize + "px"
@@ -168,13 +161,25 @@ $(function () {
         }
 
         for (i in tiles) {
+            var unitpos = posnow - parseInt(i) + gameheight - 1;
+
+            tiles[i].stop();
             tiles[i].animate({
-                left: leftpos + unitwidth * i + "px",
-                top: toppos + unitheight * i + "px",
+                left: leftpos + unitwidth * poslist[Math.floor(unitpos / gameheight) * gameheight + parseInt(i)] + "px",
+                top: toppos + unitheight * (unitpos % gameheight - 1) + "px",
                 width: unitwidth + "px",
                 height: unitheight + "px"
-            });
+            }, 100);
         }
+    }
+
+    function input(value) {
+        if (goahead(value)) {
+            drawsuccess();
+        } else {
+            drawfail();
+        }
+        updatecanvas();
     }
 
     function initcanvas() {
