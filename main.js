@@ -132,7 +132,8 @@ $(function () {
     var canvaswidth = gamewidth / (gameheight - 1);
 
     var game = $(".game");
-    var track = [];
+    var tracks = [];
+    var tiles = [];
 
     function drawsuccess() {
         //
@@ -150,13 +151,50 @@ $(function () {
         }
     }
 
+    function updatecanvas() {
+        var xsize = game.height() + 0.0;
+        var unitwidth = xsize * canvaswidth / gamewidth;
+        var unitheight = xsize / gameheight;
+        var leftpos = (game.width() - xsize * canvaswidth) / 2;
+        var toppos = game.position().top;
+
+        for (i in tracks) {
+            tracks[i].animate({
+                left: leftpos + unitwidth * i + "px",
+                top: toppos + "px",
+                width: unitwidth + "px",
+                height: xsize + "px"
+            });
+        }
+
+        for (i in tiles) {
+            tiles[i].animate({
+                left: leftpos + unitwidth * i + "px",
+                top: toppos + unitheight * i + "px",
+                width: unitwidth + "px",
+                height: unitheight + "px"
+            });
+        }
+    }
+
     function initcanvas() {
         for (i = 0; i < gamewidth; ++i) {
-            track.push(
+            tracks.push(
                 $("<div class=\"track\" />")
+                    .append("<div class=\"frame\" />")
                     .appendTo(game)
-            )
+            );
         }
+
+        for (i = 0; i < gameheight; ++i) {
+            tiles.push(
+                $("<div class=\"tile\">")
+                    .append("<div class=\"fill\">")
+                    .appendTo(game)
+            );
+        }
+
+        updatecanvas();
     }
 
     initcanvas();

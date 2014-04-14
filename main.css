@@ -24,20 +24,38 @@ a {
     font-family: helvetica, arial;
 }
 
-.title, .game, .info {
+.title, .info {
     width: 100%;
-    border: 4px solid white;
+    padding: 8px;
 }
 
 .game {
+    background-color: black;
+    width: 100%;
     height: 100%;
 }
 
 .track {
-    width: 10px;
-    height: 10px;
     position: fixed;
-    left: 50%;
-    top: 50%;
+}
+
+.tile {
+    position: fixed;
+}
+
+.frame, .fill{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     border: 2px solid gray;
+}
+
+.frame {
+    background-color: white;
+}
+
+.fill {
+    background-color: black;
 }
