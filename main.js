@@ -135,15 +135,7 @@ $(function () {
     var tracks = [];
     var tiles = [];
 
-    function drawsuccess() {
-        //
-    }
-
-    function drawfail() {
-        //
-    }
-
-    function updatecanvas() {
+    function updatecanvas(success) {
         var xsize = $(".main").height() - $(".title").outerHeight() - $(".info").outerHeight();
         var unitwidth = Math.floor(xsize * canvaswidth / gamewidth);
         var unitheight = Math.floor(xsize / (gameheight - 1));
@@ -166,7 +158,7 @@ $(function () {
         for (var i in tiles) {
             var unitpos = posnow - parseInt(i) + gameheight - 1;
 
-            tiles[i].stop();
+            tiles[i].stop().clearQueue();
             tiles[i].css({
                 left: leftpos + unitwidth * poslist[Math.floor(unitpos / gameheight) * gameheight + parseInt(i)] + "px",
                 width: unitwidth + "px",
@@ -180,16 +172,17 @@ $(function () {
             } else {
                 tiles[i].css(anidata);
             }
+
+            if (success) {
+                tiles[i].fadeTo(0, 1);
+            } else {
+                tiles[i].fadeTo(0, 0.8).fadeTo(100, 1);
+            }
         }
     }
 
     function input(value) {
-        if (goahead(value)) {
-            drawsuccess();
-        } else {
-            drawfail();
-        }
-        updatecanvas();
+        updatecanvas(goahead(value));
     }
 
     function initcanvas() {
