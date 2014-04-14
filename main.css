@@ -49,8 +49,18 @@ a {
     overflow: hidden;
 }
 
-.track {
+.track, .record {
     position: absolute;
+    top: 0px;
+    bottom: 0px;
+}
+
+.record {
+    position: absolute;
+    padding: 8px;
+    color: #808080;
+    text-align: left;
+    pointer-events: none;
 }
 
 .tile {

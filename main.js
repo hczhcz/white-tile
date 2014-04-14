@@ -8,13 +8,13 @@ $(function () {
     }
 
     function setlocalmax(key, value) {
-        if (getlocal(key) == NaN || value > getlocal(key)) {
+        if (isNaN(getlocal(key)) || value > getlocal(key)) {
             localStorage.setItem(key, value);
         }
     }
 
     function setlocalmin(key, value) {
-        if (getlocal(key) == NaN || value < getlocal(key)) {
+        if (isNaN(getlocal(key)) || value < getlocal(key)) {
             localStorage.setItem(key, value);
         }
     }
@@ -30,8 +30,8 @@ $(function () {
     // Setup
     var gamewidth = 4;
     var gameheight = 6;
-    var seriestarget = [10, 20, 50, 100, 200, 500, 1000];
-    var intervaltarget = [1.0, 0.5, 0.3, 0.2, 0.1];
+    var seriestarget = [10, 20, 30, 50, 100];
+    var intervaltarget = [1000, 500, 300, 200];
 
     // Data
     var posnow = 0;
@@ -49,7 +49,7 @@ $(function () {
         if (score > len) {
             return timelist[score - 1] - timelist[score - len - 1];
         } else {
-            return 9999;
+            return 999999;
         }
     }
 
@@ -72,7 +72,7 @@ $(function () {
 
         for (var i in result) {
             setlocal(i, result[i]);
-            resultsto[i] = getresult(i);
+            resultsto[i] = getlocal(i);
         }
 
         return {current: result, best: resultsto};
@@ -134,6 +134,7 @@ $(function () {
     var game = $(".game");
     var tracks = [];
     var tiles = [];
+    var record;
 
     function updatecanvas(success) {
         var xsize = $(".main").height() - $(".title").outerHeight() - $(".info").outerHeight();
@@ -149,9 +150,7 @@ $(function () {
         for (var i in tracks) {
             tracks[i].css({
                 left: leftpos + unitwidth * parseInt(i) + "px",
-                top: "0px",
-                width: unitwidth + "px",
-                height: unitheight * (gameheight - 1) + "px"
+                width: unitwidth + "px"
             });
         }
 
@@ -178,6 +177,23 @@ $(function () {
             } else {
                 tiles[i].fadeTo(0, 0.8).fadeTo(100, 1);
             }
+        }
+
+        record.css({
+            left: leftpos + "px",
+            width: unitwidth * gamewidth + "px"
+        });
+
+        var result = getresultwithsto();
+
+        record.text("");
+
+        for (var i in result.current) {
+            var cu = result.current[i];
+            var be = result.best[i];
+            if (i[0] == "-" && cu == 999999) cu = "none";
+            if (i[0] == "-" && be == 999999) be = "none";
+            $("<p />").text(i.substring(4, i.length) + " - " + cu + " / " + be).appendTo(record);
         }
     }
 
@@ -206,6 +222,9 @@ $(function () {
                     .appendTo(game)
             );
         }
+
+        record = $("<div class=\"record\" />").appendTo(game);
+        record.fadeTo(0, 0.4);
 
         $(window).resize(updatecanvas);
         $(window).load(updatecanvas);
