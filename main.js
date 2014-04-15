@@ -202,17 +202,30 @@ $(function () {
     }
 
     function initcanvas() {
+        $("body").delegate("*", "touchstart", function (e) {
+            if ($(this) !== $altNav) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         for (var i = 0; i < gamewidth; ++i) {
-            tracks.push(
+            var event = function (j){
+                return function (e){
+                    e.preventDefault();
+                    input(j);
+                };
+            }(i);
+
+            var track =
                 $("<div class=\"track\" />")
                     .append("<div class=\"frame\" />")
-                    .click(
-                        function (j){
-                            return function (){input(j);};
-                        }(i)
-                    )
-                    .appendTo(game)
-            );
+                    .appendTo(game);
+
+            track[0].addEventListener("click", event);
+            track[0].addEventListener("touchstart", event);
+
+            tracks.push(track);
         }
 
         for (var i = 0; i < gameheight; ++i) {
